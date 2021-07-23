@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
-	github.com/yedf/dtm v0.0.0-20210722035004-703670936502 // indirect
+	github.com/yedf/dtm v0.0.0-20210723072333-677fcc27c4c6 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect

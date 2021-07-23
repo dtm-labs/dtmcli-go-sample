@@ -26,8 +26,10 @@ func startSvr() {
 
 func tccFireRequest() string {
 	log.Printf("tcc transaction begin")
+	dtm := "http://localhost:8080/api/dtmsvr"
+	gid := dtmcli.MustGenGid(dtm)
 	// TccGlobalTransaction 开启一个TCC全局事务，第一个参数为dtm的地址，第二个参数是回调函数
-	gid, err := dtmcli.TccGlobalTransaction("http://localhost:8080/api/dtmsvr", func(tcc *dtmcli.Tcc) (rerr error) {
+	err := dtmcli.TccGlobalTransaction(dtm, gid, func(tcc *dtmcli.Tcc) (rerr error) {
 		// 调用TransOut分支，三个参数分别为post的body，tryUrl，confirmUrl，cancelUrl
 		// res1 为try执行的结果
 		res1, rerr := tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransOut", tccBusi+"/TransOutConfirm", tccBusi+"/TransOutCancel")
