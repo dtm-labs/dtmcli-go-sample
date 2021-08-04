@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yedf/dtm/dtmcli"
+	"github.com/go-resty/resty/v2"
+	"github.com/yedf/dtmcli"
 )
 
 // 事务参与者的服务地址
@@ -29,19 +30,18 @@ func tccFireRequest() string {
 	dtm := "http://localhost:8080/api/dtmsvr"
 	gid := dtmcli.MustGenGid(dtm)
 	// TccGlobalTransaction 开启一个TCC全局事务，第一个参数为dtm的地址，第二个参数是回调函数
-	err := dtmcli.TccGlobalTransaction(dtm, gid, func(tcc *dtmcli.Tcc) (rerr error) {
+	err := dtmcli.TccGlobalTransaction(dtm, gid, func(tcc *dtmcli.Tcc) (resp *resty.Response, rerr error) {
 		// 调用TransOut分支，三个参数分别为post的body，tryUrl，confirmUrl，cancelUrl
 		// res1 为try执行的结果
-		res1, rerr := tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransOut", tccBusi+"/TransOutConfirm", tccBusi+"/TransOutCancel")
+		resp, rerr = tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransOut", tccBusi+"/TransOutConfirm", tccBusi+"/TransOutCancel")
 		if rerr != nil {
 			return
 		}
 		// 调用TransIn分支
-		res2, rerr := tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransIn", tccBusi+"/TransInConfirm", tccBusi+"/TransInCancel")
+		resp, rerr = tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransIn", tccBusi+"/TransInConfirm", tccBusi+"/TransInCancel")
 		if rerr != nil {
 			return
 		}
-		log.Printf("tcc returns: %s, %s", res1.String(), res2.String())
 		// 返回后，tcc会把全局事务提交，DTM会调用个分支的Confirm
 		return
 	})
