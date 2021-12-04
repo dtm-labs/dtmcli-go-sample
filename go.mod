@@ -9,7 +9,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
-	github.com/yedf/dtmcli v1.6.0
-	golang.org/x/net v0.0.0-20211201190559-0a0e4e1bb54c // indirect
+	github.com/yedf/dtmcli v1.6.2
+	golang.org/x/net v0.0.0-20211203184738-4852103109b8 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
