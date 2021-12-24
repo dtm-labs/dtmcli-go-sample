@@ -7,7 +7,7 @@ dtmcli的go使用示例
 
 需要docker版本18以上
 ```
-git clone https://github.com/yedf/dtm
+git clone https://github.com/dtm-labs/dtm
 cd dtm
 docker-compose up
 ```
@@ -52,4 +52,4 @@ go run main.go
 	})
 ```
 
-### 更多示例，详见[dtm](https://github.com/yedf/dtm)的examples
+### 更多示例，详见[dtm](https://github.com/dtm-labs/dtm)的examples

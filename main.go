@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/dtm-labs/dtmcli"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
-	"github.com/yedf/dtmcli"
 )
 
 // 事务参与者的服务地址
