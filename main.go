@@ -29,7 +29,7 @@ func tccFireRequest() string {
 	log.Printf("tcc transaction begin")
 	dtm := "http://localhost:36789/api/dtmsvr"
 	gid := dtmcli.MustGenGid(dtm)
-	// TccGlobalTransaction 开启一个TCC全局事务，第一个参数为dtm的地址，第二个参数是回调函数
+	// TccGlobalTransaction 开启一个TCC全局事务，第一个参数为dtm的地址，第二个参数是gid，第三个参数是回调函数
 	err := dtmcli.TccGlobalTransaction(dtm, gid, func(tcc *dtmcli.Tcc) (resp *resty.Response, rerr error) {
 		// 调用TransOut分支，三个参数分别为post的body，tryUrl，confirmUrl，cancelUrl
 		// res1 为try执行的结果
