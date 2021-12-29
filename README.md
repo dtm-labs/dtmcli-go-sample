@@ -5,10 +5,10 @@ dtmcli的go使用示例
 
 ### 部署启动dtm
 
-需要docker版本18以上
+需要docker版本20.04以上
 ```
 git clone https://github.com/dtm-labs/dtm
-cd dtm
+cd dtm && git checkout v1.7.5
 docker-compose up
 ```
 
