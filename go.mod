@@ -3,7 +3,7 @@ module github.com/dtm-labs/dtmcli-go-sample
 go 1.15
 
 require (
-	github.com/dtm-labs/dtmcli v1.8.2
+	github.com/dtm-labs/dtmcli v1.8.1-0.20220101034551-aa61b385a43f
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.7.0 // indirect
 	github.com/go-resty/resty/v2 v2.7.0
