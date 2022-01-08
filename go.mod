@@ -3,7 +3,7 @@ module github.com/dtm-labs/dtmcli-go-sample
 go 1.15
 
 require (
-	github.com/dtm-labs/dtmcli v1.9.0
+	github.com/dtm-labs/dtmcli v1.9.1
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.7.0 // indirect
 	github.com/go-resty/resty/v2 v2.7.0
@@ -13,6 +13,6 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.20.0 // indirect
-	golang.org/x/net v0.0.0-20220105145211-5b0dc2dfae98 // indirect
+	golang.org/x/net v0.0.0-20220107192237-5cfca573fb4d // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
