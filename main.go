@@ -20,6 +20,7 @@ func main() {
 	QsStartSvr()
 	gid := QsFireRequest()
 	logger.Infof("transaction: %s submitted", gid)
+	select {}
 }
 
 // QsStartSvr quick start: start server
