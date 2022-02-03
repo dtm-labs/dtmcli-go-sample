@@ -2,80 +2,72 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/dtm-labs/dtmcli"
+	"github.com/dtm-labs/dtmcli/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty/v2"
 )
 
+// 启动命令：go run app/main.go qs
+
 // 事务参与者的服务地址
-const tccBusiAPI = "/api/busi_start"
-const tccBusiPort = 8082
+const qsBusiAPI = "/api/busi_start"
+const qsBusiPort = 8082
+const dtmServer = "http://localhost:36789/api/dtmsvr"
 
-var tccBusi = fmt.Sprintf("http://localhost:%d%s", tccBusiPort, tccBusiAPI)
+var qsBusi = fmt.Sprintf("http://localhost:%d%s", qsBusiPort, qsBusiAPI)
 
-func startSvr() {
-	gin.SetMode(gin.ReleaseMode)
-	app := gin.Default()
+func main() {
+	QsStartSvr()
+	gid := QsFireRequest()
+	logger.Infof("transaction: %s succeed", gid)
+}
+
+// QsStartSvr quick start: start server
+func QsStartSvr() {
+	app := gin.New()
 	qsAddRoute(app)
-	log.Printf("quick start examples listening at %d", tccBusiPort)
-	go app.Run(fmt.Sprintf(":%d", tccBusiPort))
+	logger.Infof("quick start examples listening at %d", qsBusiPort)
+	go func() {
+		_ = app.Run(fmt.Sprintf(":%d", qsBusiPort))
+	}()
 	time.Sleep(100 * time.Millisecond)
 }
 
-func tccFireRequest() string {
-	log.Printf("tcc transaction begin")
-	dtm := "http://localhost:36789/api/dtmsvr"
-	gid := dtmcli.MustGenGid(dtm)
-	// TccGlobalTransaction 开启一个TCC全局事务，第一个参数为dtm的地址，第二个参数是gid，第三个参数是回调函数
-	err := dtmcli.TccGlobalTransaction(dtm, gid, func(tcc *dtmcli.Tcc) (resp *resty.Response, rerr error) {
-		// 调用TransOut分支，三个参数分别为post的body，tryUrl，confirmUrl，cancelUrl
-		// res1 为try执行的结果
-		resp, rerr = tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransOut", tccBusi+"/TransOutConfirm", tccBusi+"/TransOutCancel")
-		if rerr != nil {
-			return
-		}
-		// 调用TransIn分支
-		resp, rerr = tcc.CallBranch(gin.H{"amount": 30}, tccBusi+"/TransIn", tccBusi+"/TransInConfirm", tccBusi+"/TransInCancel")
-		if rerr != nil {
-			return
-		}
-		// 返回后，tcc会把全局事务提交，DTM会调用个分支的Confirm
-		return
-	})
-	if err != nil {
-		log.Fatalf("Tcc transaction failed: %v", err)
-	}
-	log.Printf("tcc %s submitted", gid)
-	return gid
+// QsFireRequest quick start: fire request
+func QsFireRequest() string {
+	req := &gin.H{"amount": 30} // 微服务的载荷
+	// DtmServer为DTM服务的地址
+	saga := dtmcli.NewSaga(dtmServer, dtmcli.MustGenGid(dtmServer)).
+		// 添加一个TransOut的子事务，正向操作为url: qsBusi+"/TransOut"， 逆向操作为url: qsBusi+"/TransOutCompensate"
+		Add(qsBusi+"/TransOut", qsBusi+"/TransOutCompensate", req).
+		// 添加一个TransIn的子事务，正向操作为url: qsBusi+"/TransOut"， 逆向操作为url: qsBusi+"/TransInCompensate"
+		Add(qsBusi+"/TransIn", qsBusi+"/TransInCompensate", req)
+	// 等待事务全部完成后再返回，可选
+	saga.WaitResult = true
+	// 提交saga事务，dtm会完成所有的子事务/回滚所有的子事务
+	err := saga.Submit()
+	logger.FatalIfError(err)
+	return saga.Gid
 }
 
 func qsAddRoute(app *gin.Engine) {
-	app.POST(tccBusiAPI+"/TransIn", func(c *gin.Context) {
-		log.Printf("TransIn ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
-	}).POST(tccBusiAPI+"/TransInConfirm", func(c *gin.Context) {
-		log.Printf("TransInConfirm ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
-	}).POST(tccBusiAPI+"/TransInCancel", func(c *gin.Context) {
-		log.Printf("TransInCancel ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
-	}).POST(tccBusiAPI+"/TransOut", func(c *gin.Context) {
-		log.Printf("TransOut ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
-	}).POST(tccBusiAPI+"/TransOutConfirm", func(c *gin.Context) {
-		log.Printf("TransOutConfirm ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
-	}).POST(tccBusiAPI+"/TransOutCancel", func(c *gin.Context) {
-		log.Printf("TransOutCancel ok")
-		c.JSON(200, gin.H{"dtm_result": "SUCCESS"})
+	app.POST(qsBusiAPI+"/TransIn", func(c *gin.Context) {
+		logger.Infof("TransIn")
+		c.JSON(200, "")
+		// c.JSON(409, "") // Status 409 for Failure. Won't be retried
 	})
-}
-
-func main() {
-	startSvr()
-	tccFireRequest()
-	time.Sleep(1000 * time.Second)
+	app.POST(qsBusiAPI+"/TransInCompensate", func(c *gin.Context) {
+		logger.Infof("TransInCompensate")
+		c.JSON(200, "")
+	})
+	app.POST(qsBusiAPI+"/TransOut", func(c *gin.Context) {
+		logger.Infof("TransOut")
+		c.JSON(200, "")
+	})
+	app.POST(qsBusiAPI+"/TransOutCompensate", func(c *gin.Context) {
+		logger.Infof("TransOutCompensate")
+		c.JSON(200, "")
+	})
 }
