@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 启动命令：go run app/main.go qs
-
 // 事务参与者的服务地址
 const qsBusiAPI = "/api/busi_start"
 const qsBusiPort = 8082
