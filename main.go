@@ -52,8 +52,8 @@ func QsFireRequest() string {
 func qsAddRoute(app *gin.Engine) {
 	app.POST(qsBusiAPI+"/TransIn", func(c *gin.Context) {
 		logger.Infof("TransIn")
-		c.JSON(200, "")
-		// c.JSON(409, "") // Status 409 for Failure. Won't be retried
+		// c.JSON(200, "")
+		c.JSON(409, "") // Status 409 for Failure. Won't be retried
 	})
 	app.POST(qsBusiAPI+"/TransInCompensate", func(c *gin.Context) {
 		logger.Infof("TransInCompensate")
