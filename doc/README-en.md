@@ -7,7 +7,7 @@ Minimal usage example for dtmcli
 
 ### Installing and running dtm
 
-Refer to [dtm installation and running](https://dtm.pub/guide/install.html)
+Refer to [dtm installation and running](https://en.dtm.pub/guide/install.html)
 
 ### Startup example
 
