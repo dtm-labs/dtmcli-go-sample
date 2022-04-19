@@ -17,8 +17,7 @@ var qsBusi = fmt.Sprintf("http://localhost:%d%s", qsBusiPort, qsBusiAPI)
 
 func main() {
 	QsStartSvr()
-	gid := QsFireRequest()
-	log.Printf("transaction: %s submitted", gid)
+	_ = QsFireRequest()
 	select {}
 }
 
@@ -70,5 +69,6 @@ func QsFireRequest() string {
 	if err != nil {
 		panic(err)
 	}
+	log.Printf("transaction: %s submitted", saga.Gid)
 	return saga.Gid
 }
